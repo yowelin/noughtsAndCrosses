@@ -1,0 +1,174 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jun 20, 2019, 8:39:54 PM
+    Author     : semik
+*/
+body {
+    background: #333; /* Цвет фона */
+    color: #fc0; /* Цвет текста */
+}
+#menu {
+    border: 1px solid greenyellow;
+    width: 302px;
+}
+#sideChoosing, #firstMoveChoosing {
+    margin: 0px;
+    border: 0px;
+    padding: 5px;
+}
+/*CSS-код для радиокнопки будет таким:*/
+.sides {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+    margin: 10px 0 0 7px;
+}
+.sides + label {
+    position: relative;
+    display: block;
+    height: 14px;
+    padding: 5px 0px 5px 35px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #fc0;
+}
+.sides + label:before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    width: 12px;
+    height: 12px;
+    border: 1px solid #CDD1DA;
+    border-radius: 50%;
+    background: #FFF;
+}
+.sides + label:after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 13px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #9FD468;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.5);
+    opacity: 0;
+    transition: .2s;
+}
+.sides:checked + label:after {
+    opacity: 1;
+}
+/*CSS-код для чекбокса будет таким:*/
+#firstMove {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+    margin: 10px 0 0 20px;
+}
+#firstMove + label {
+    position: relative;
+    display: block;
+    height: 14px;
+    padding: 5px 0px 5px 35px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #fc0;
+}
+#firstMove + label:before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 26px;
+    height: 14px;
+    border-radius: 13px;
+    background: #CDD1DA;
+    box-shadow: inset 0 2px 3px rgba(0,0,0,.2);
+    transition: .2s;
+}
+#firstMove + label:after {
+    content: '';
+    position: absolute;
+    top: 7px;
+    left: 8px;
+    width: 10px;
+    height: 10px;
+    border-radius: 10px;
+    background: #FFF;
+    box-shadow: 0 2px 5px rgba(0,0,0,.3);
+    transition: .2s;
+}
+#firstMove:checked + label:before {
+    background: #9FD468;
+}
+#firstMove:checked + label:after {
+    left: 18px;
+}
+#firstMove:focus + label:before {
+    /*box-shadow: inset 0 2px 3px rgba(0,0,0,.2), 0 0 0 3px rgba(255,255,0,.7);*/
+}
+/**/
+#startButton {
+    margin: 5px;
+    width: 200px;
+    padding: 3px;
+    background: grey;
+    border: 1px solid black;
+    color: #fc0;
+    cursor: pointer;
+}
+#startButton:active {
+    background: #e5e5e5;
+    color: black;
+    border: 1px solid greenyellow;
+}
+/**/
+table.gameField {
+    position: relative;
+    top: 3px;
+    font-family: "Lucida Console", Monaco, monospace;
+    margin: 0px;
+    border: 1px solid #ADFF2F;
+    padding: 0px 0px 0px 0px;
+    background-color: #333333;
+    /*width: 304px;
+    height: 304px;*/
+    text-align: center;
+    border-collapse: collapse;
+}
+table.gameField td {
+    margin: 0px;
+    border: 1px solid #ADFF2F;
+    padding: 0px 0px 0px 0px;
+    width: 100px;
+    height: 100px;
+}
+.empty:hover {
+    background-color: seagreen;
+    cursor: pointer;
+}
+.full:hover {
+    background-color: orangered;
+    cursor: pointer;
+}
+.empty, .full {
+    transition: background-color 0.5s 0.1s ease;
+    /*-o-transition: background-color 0.5s 0.1s ease;
+    -webkit-transition: background-color 0.5s 0.1s ease;*/
+}
+#gameStatus {
+    position: relative;
+    top: 3px;
+    width: 304px;
+    background-color: transparent;
+}
+#gameStatus {
+    transition: background-color 0.15s 0.1s ease;
+    /*-o-transition: background-color 0.15s 0.1s ease;
+    -webkit-transition: background-color 0.15s 0.1s ease;*/
+}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Noughts and Crosses</title>
+        <link href="styles.css" rel="stylesheet">
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    </head>
+    <body>
+        <script src="index.js"></script>
+        <div id="menu">
+            <p id="sideChoosing">Выберите чем будете играть:</p>
+            <input type="radio" id="crosses" class="sides" name="side" checked>
+            <label for="crosses">Крестики</label>
+            <input type="radio" id="noughts" class="sides" name="side">
+            <label for="noughts">Нолики</label>
+            <p id="firstMoveChoosing">Хотите ходить первым?</p>
+            <input type="checkbox" id="firstMove" name="firstTurn" checked>
+            <label for="firstMove">Первых ход за мной!</label>
+            <input type="button" id="startButton" value="Начать игру">
+        </div>
+        <table id="gameField" class="gameField">
+            <tr>
+                <td id="0" class="empty"></td>
+                <td id="1" class="empty"></td>
+                <td id="2" class="empty"></td>
+            </tr>
+            <tr>
+                <td id="3" class="empty"></td>
+                <td id="4" class="empty"></td>
+                <td id="5" class="empty"></td>
+            </tr>
+            <tr>
+                <td id="6" class="empty"></td>
+                <td id="7" class="empty"></td>
+                <td id="8" class="empty"></td>
+            </tr>
+        </table>
+        <div id="gameStatus" class="">Нажмите "Начать игру".</div>
+    </body>
+</html>
