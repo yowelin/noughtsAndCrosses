@@ -163,8 +163,12 @@ table.gameField td {
 }
 #gameStatus {
     position: relative;
-    top: 3px;
-    width: 304px;
+    top: 5px;
+    width: 302px;
+    font-size: 14px;
+    margin: 0px;
+    border: 1px solid #ADFF2F;
+    padding: 0px;
     background-color: transparent;
 }
 #gameStatus {

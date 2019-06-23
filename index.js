@@ -11,18 +11,30 @@ var isAiMoveFirst;
 var isGameRunning = false;
 //keeps count of function calls
 var fc = 0;
-// finding the ultimate play on the game that favors the computer
+//finding the ultimate play on the game that favors the computer
 var bestSpot;
-//available spots
+//Red background
+var redBG = 'orangered';
+//Green background
+var greenBG = 'seagreen';
+//No background
+var noBG = 'transparent';
+//Terminal Situations Array
+var terminalSituationsArr = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 window.addEventListener('load', function () {
     var gameStatus = document.getElementById('gameStatus');
     document.getElementById('startButton').onclick = function (e) {
         e = e || event;
         var target = e.target || e.srcElement;
+        var cellToReset;
+        for (var i = 0; i <= 8; i++) {
+            cellToReset = document.getElementById(i);
+            cellToReset.style.backgroundColor = noBG;
+        }
         origBoard = [0, 1, 2, 3, 4, 5, 6, 7, 8];
         for (var i = 0; i < origBoard.length; i++) {
             var cell = document.getElementById(i);
-            cell.setAttribute('class', 'empty')
+            cell.setAttribute('class', 'empty');
             cell.innerHTML = null;
         }
         var radioCrosses = document.getElementById('crosses');
@@ -43,12 +55,12 @@ window.addEventListener('load', function () {
         }
         isGameRunning = true;
         gameStatus.innerHTML = 'Игра началась!';
-        gameStatus.style.backgroundColor = 'transparent';
-    }
+        gameStatus.style.backgroundColor = noBG;
+    };
     document.getElementById('gameField').onclick = function (e) {
         if (isGameRunning) {
             e = e || event;
-            gameStatus.style.backgroundColor = 'transparent';
+            gameStatus.style.backgroundColor = noBG;
             var target = e.target || e.srcElement;
             var pressedCell = document.getElementById(target.id);
             if (pressedCell != undefined) {
@@ -58,36 +70,115 @@ window.addEventListener('load', function () {
                     pressedCell.appendChild(imgHuman);
                     pressedCell.setAttribute('class', 'full');
                     origBoard[target.id] = huPlayer;
-                    //console.log(origBoard);
                     aiMoves();
                     var availSpots = emptyIndices(origBoard);
-
-                    if (winning(origBoard, huPlayer)) {
+                    var terminalSituation = checkTerminalSituations(origBoard, aiPlayer);
+                    if (checkTerminalSituations(origBoard, huPlayer)) {
                         gameStatus.innerHTML = 'Вы выиграли!';
                         isGameRunning = false;
-                    } else if (winning(origBoard, aiPlayer)) {
+                    } else if (terminalSituation == terminalSituationsArr[1]) {
+                        highlightCells(terminalSituationsArr[1]);
+                        gameStatus.innerHTML = 'Вы проиграли!';
+                        isGameRunning = false;
+                    } else if (terminalSituation == terminalSituationsArr[2]) {
+                        highlightCells(terminalSituationsArr[2]);
+                        gameStatus.innerHTML = 'Вы проиграли!';
+                        isGameRunning = false;
+                    } else if (terminalSituation == terminalSituationsArr[3]) {
+                        highlightCells(terminalSituationsArr[3]);
+                        gameStatus.innerHTML = 'Вы проиграли!';
+                        isGameRunning = false;
+                    } else if (terminalSituation == terminalSituationsArr[4]) {
+                        highlightCells(terminalSituationsArr[4]);
+                        gameStatus.innerHTML = 'Вы проиграли!';
+                        isGameRunning = false;
+                    } else if (terminalSituation == terminalSituationsArr[5]) {
+                        highlightCells(terminalSituationsArr[5]);
+                        gameStatus.innerHTML = 'Вы проиграли!';
+                        isGameRunning = false;
+                    } else if (terminalSituation == terminalSituationsArr[6]) {
+                        highlightCells(terminalSituationsArr[6]);
+                        gameStatus.innerHTML = 'Вы проиграли!';
+                        isGameRunning = false;
+                    } else if (terminalSituation == terminalSituationsArr[7]) {
+                        highlightCells(terminalSituationsArr[7]);
+                        gameStatus.innerHTML = 'Вы проиграли!';
+                        isGameRunning = false;
+                    } else if (terminalSituation == terminalSituationsArr[8]) {
+                        highlightCells(terminalSituationsArr[8]);
                         gameStatus.innerHTML = 'Вы проиграли!';
                         isGameRunning = false;
                     } else if (availSpots.length == 0) {
-                        //console.log(availSpots);
                         gameStatus.innerHTML = 'Ничья!';
                         isGameRunning = false;
                     }
                 }
             }
         } else {
-            if (gameStatus.style.backgroundColor == 'red') {
-                gameStatus.style.backgroundColor = 'transparent';
+            if (gameStatus.style.backgroundColor == redBG) {
+                gameStatus.style.backgroundColor = noBG;
                 setTimeout(alertStatus, 200);
-                /*setTimeout(gameStatus.style.backgroundColor = 'red', 5000);*/
             } else {
                 alertStatus();
             }
         }
     }
 });
+function highlightCells(atrTerminalSituation) {
+    var cellToHighlight;
+    for (var i = 0; i <= 8; i++) {
+        if (atrTerminalSituation == 1) {
+            if (i == 0 || i == 1 || i == 2) {
+                cellToHighlight = document.getElementById(i);
+                cellToHighlight.style.backgroundColor = redBG;
+            }
+        }
+        if (atrTerminalSituation == 2) {
+            if (i == 3 || i == 4 || i == 5) {
+                cellToHighlight = document.getElementById(i);
+                cellToHighlight.style.backgroundColor = redBG;
+            }
+        }
+        if (atrTerminalSituation == 3) {
+            if (i == 6 || i == 7 || i == 8) {
+                cellToHighlight = document.getElementById(i);
+                cellToHighlight.style.backgroundColor = redBG;
+            }
+        }
+        if (atrTerminalSituation == 4) {
+            if (i == 0 || i == 3 || i == 6) {
+                cellToHighlight = document.getElementById(i);
+                cellToHighlight.style.backgroundColor = redBG;
+            }
+        }
+        if (atrTerminalSituation == 5) {
+            if (i == 1 || i == 4 || i == 7) {
+                cellToHighlight = document.getElementById(i);
+                cellToHighlight.style.backgroundColor = redBG;
+            }
+        }
+        if (atrTerminalSituation == 6) {
+            if (i == 2 || i == 5 || i == 8) {
+                cellToHighlight = document.getElementById(i);
+                cellToHighlight.style.backgroundColor = redBG;
+            }
+        }
+        if (atrTerminalSituation == 7) {
+            if (i == 0 || i == 4 || i == 8) {
+                cellToHighlight = document.getElementById(i);
+                cellToHighlight.style.backgroundColor = redBG;
+            }
+        }
+        if (atrTerminalSituation == 8) {
+            if (i == 2 || i == 4 || i == 6) {
+                cellToHighlight = document.getElementById(i);
+                cellToHighlight.style.backgroundColor = redBG;
+            }
+        }
+    }
+}
 function alertStatus() {
-    gameStatus.style.backgroundColor = 'red';
+    gameStatus.style.backgroundColor = redBG;
 }
 function aiMoves() {
     //AI move
@@ -109,10 +200,10 @@ function minimax(atrBoard, atrPlayer) {
     //add one to function calls
     fc++;
     var availSpots = emptyIndices(atrBoard);
-    // checks for the terminal states such as win, lose, and tie and returning a value accordingly
-    if (winning(atrBoard, huPlayer)) {
+    //checks for the terminal states such as win, lose, and tie and returning a value accordingly
+    if (checkTerminalSituations(atrBoard, huPlayer)) {
         return {score: -10};
-    } else if (winning(atrBoard, aiPlayer)) {
+    } else if (checkTerminalSituations(atrBoard, aiPlayer)) {
         return {score: 10};
     } else if (availSpots.length === 0) {
         return {score: 0};
@@ -173,26 +264,8 @@ function minimax(atrBoard, atrPlayer) {
 function emptyIndices(atrBoard) {
     return  atrBoard.filter(s => s !== 'nought' && s !== 'cross');
 }
-
-//winning combinations using the atrBoard indexies for instace the first win could be 3 xes in a row
-/*function winning(atrBoard, atrPlayer) {
-    if (
-            (atrBoard[0] === atrPlayer && atrBoard[1] === atrPlayer && atrBoard[2] === atrPlayer) ||
-            (atrBoard[3] === atrPlayer && atrBoard[4] === atrPlayer && atrBoard[5] === atrPlayer) ||
-            (atrBoard[6] === atrPlayer && atrBoard[7] === atrPlayer && atrBoard[8] === atrPlayer) ||
-            (atrBoard[0] === atrPlayer && atrBoard[3] === atrPlayer && atrBoard[6] === atrPlayer) ||
-            (atrBoard[1] === atrPlayer && atrBoard[4] === atrPlayer && atrBoard[7] === atrPlayer) ||
-            (atrBoard[2] === atrPlayer && atrBoard[5] === atrPlayer && atrBoard[8] === atrPlayer) ||
-            (atrBoard[0] === atrPlayer && atrBoard[4] === atrPlayer && atrBoard[8] === atrPlayer) ||
-            (atrBoard[2] === atrPlayer && atrBoard[4] === atrPlayer && atrBoard[6] === atrPlayer)
-            ) {
-        return true;
-    } else {
-        return false;
-    }
-}*/
-//winning combinations using the atrBoard indexies for instace the first win could be 3 xes in a row
-function winning(atrBoard, atrPlayer) {
+//check winning combinations using the atrBoard indexies for instace the first win could be 3 xes in a row
+function checkTerminalSituations(atrBoard, atrPlayer) {
     if (atrBoard[0] === atrPlayer && atrBoard[1] === atrPlayer && atrBoard[2] === atrPlayer) {
         return 1;
     } else if (atrBoard[3] === atrPlayer && atrBoard[4] === atrPlayer && atrBoard[5] === atrPlayer) {
