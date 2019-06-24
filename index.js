@@ -1,28 +1,30 @@
-// human
+//human
 var huPlayer;
-// ai
+//ai
 var aiPlayer;
-// this is the atrBoard flattened and filled with some values to easier asses the Artificial Intelligence.
+//this is the atrBoard flattened and filled with some values to easier asses the Artificial Intelligence.
 //var origBoard = ['nought', 1, 'cross', 3, 4, 'cross', 6, 'nought', 'nought'];
 var origBoard;
-// ai first move
+//ai first move
 var isAiMoveFirst;
-// is game running
+//is game running
 var isGameRunning = false;
 //keeps count of function calls
-var fc = 0;
+//var fc = 0;
 //finding the ultimate play on the game that favors the computer
 var bestSpot;
-//Red background
+//red background var
 var redBG = 'orangered';
-//Green background
+//green background var
 var greenBG = 'seagreen';
-//No background
+//no background var
 var noBG = 'transparent';
-//Terminal Situations Array
+//terminal Situations Array
 var terminalSituationsArr = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+//game status var
+var gameStatus;
 window.addEventListener('load', function () {
-    var gameStatus = document.getElementById('gameStatus');
+    gameStatus = document.getElementById('gameStatus');
     document.getElementById('startButton').onclick = function (e) {
         e = e || event;
         var target = e.target || e.srcElement;
@@ -61,6 +63,7 @@ window.addEventListener('load', function () {
         if (isGameRunning) {
             e = e || event;
             gameStatus.style.backgroundColor = noBG;
+            //console.log(origBoard);
             var target = e.target || e.srcElement;
             var pressedCell = document.getElementById(target.id);
             if (pressedCell != undefined) {
@@ -78,39 +81,22 @@ window.addEventListener('load', function () {
                         isGameRunning = false;
                     } else if (terminalSituation == terminalSituationsArr[1]) {
                         highlightCells(terminalSituationsArr[1]);
-                        gameStatus.innerHTML = 'Вы проиграли!';
-                        isGameRunning = false;
                     } else if (terminalSituation == terminalSituationsArr[2]) {
                         highlightCells(terminalSituationsArr[2]);
-                        gameStatus.innerHTML = 'Вы проиграли!';
-                        isGameRunning = false;
                     } else if (terminalSituation == terminalSituationsArr[3]) {
                         highlightCells(terminalSituationsArr[3]);
-                        gameStatus.innerHTML = 'Вы проиграли!';
-                        isGameRunning = false;
                     } else if (terminalSituation == terminalSituationsArr[4]) {
                         highlightCells(terminalSituationsArr[4]);
-                        gameStatus.innerHTML = 'Вы проиграли!';
-                        isGameRunning = false;
                     } else if (terminalSituation == terminalSituationsArr[5]) {
                         highlightCells(terminalSituationsArr[5]);
-                        gameStatus.innerHTML = 'Вы проиграли!';
-                        isGameRunning = false;
                     } else if (terminalSituation == terminalSituationsArr[6]) {
                         highlightCells(terminalSituationsArr[6]);
-                        gameStatus.innerHTML = 'Вы проиграли!';
-                        isGameRunning = false;
                     } else if (terminalSituation == terminalSituationsArr[7]) {
                         highlightCells(terminalSituationsArr[7]);
-                        gameStatus.innerHTML = 'Вы проиграли!';
-                        isGameRunning = false;
                     } else if (terminalSituation == terminalSituationsArr[8]) {
                         highlightCells(terminalSituationsArr[8]);
-                        gameStatus.innerHTML = 'Вы проиграли!';
-                        isGameRunning = false;
                     } else if (availSpots.length == 0) {
-                        gameStatus.innerHTML = 'Ничья!';
-                        isGameRunning = false;
+                        highlightCells(terminalSituationsArr[0]);
                     }
                 }
             }
@@ -127,54 +113,53 @@ window.addEventListener('load', function () {
 function highlightCells(atrTerminalSituation) {
     var cellToHighlight;
     for (var i = 0; i <= 8; i++) {
+        if (atrTerminalSituation == 0) {
+            gameStatus.innerHTML = 'Ничья!';
+        } else {
+            gameStatus.innerHTML = 'Вы проиграли!';
+        }
         if (atrTerminalSituation == 1) {
             if (i == 0 || i == 1 || i == 2) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        }
-        if (atrTerminalSituation == 2) {
+        } else if (atrTerminalSituation == 2) {
             if (i == 3 || i == 4 || i == 5) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        }
-        if (atrTerminalSituation == 3) {
+        } else if (atrTerminalSituation == 3) {
             if (i == 6 || i == 7 || i == 8) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        }
-        if (atrTerminalSituation == 4) {
+        } else if (atrTerminalSituation == 4) {
             if (i == 0 || i == 3 || i == 6) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        }
-        if (atrTerminalSituation == 5) {
+        } else if (atrTerminalSituation == 5) {
             if (i == 1 || i == 4 || i == 7) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        }
-        if (atrTerminalSituation == 6) {
+        } else if (atrTerminalSituation == 6) {
             if (i == 2 || i == 5 || i == 8) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        }
-        if (atrTerminalSituation == 7) {
+        } else if (atrTerminalSituation == 7) {
             if (i == 0 || i == 4 || i == 8) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        }
-        if (atrTerminalSituation == 8) {
+        } else if (atrTerminalSituation == 8) {
             if (i == 2 || i == 4 || i == 6) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
         }
+        isGameRunning = false;
     }
 }
 function alertStatus() {
@@ -198,7 +183,7 @@ function aiMoves() {
 // the main minimax function
 function minimax(atrBoard, atrPlayer) {
     //add one to function calls
-    fc++;
+    //fc++;
     var availSpots = emptyIndices(atrBoard);
     //checks for the terminal states such as win, lose, and tie and returning a value accordingly
     if (checkTerminalSituations(atrBoard, huPlayer)) {
@@ -210,7 +195,6 @@ function minimax(atrBoard, atrPlayer) {
     }
     //an array to collect all the objects
     var movesArr = [];
-
     //loop through available spots
     for (var i = 0; i < availSpots.length; i++) {
         //create an object for each and store the index of that spot that was stored as a number in the object's index key
@@ -228,38 +212,52 @@ function minimax(atrBoard, atrPlayer) {
             var result = minimax(atrBoard, aiPlayer);
             moveObj.score = result.score;
         }
-
         //reset the spot to empty
         atrBoard[availSpots[i]] = moveObj.index;
-
         // push the object to the array
         movesArr.push(moveObj);
     }
-
     //if it is the computer's turn loop over the movesArr and choose the moveObj with the highest score
-    var bestMove;
+    var bestMoveArr = [];
     if (atrPlayer === aiPlayer) {
         var bestScore = -10000;
+        var j = 0;
         for (var i = 0; i < movesArr.length; i++) {
             if (movesArr[i].score > bestScore) {
                 bestScore = movesArr[i].score;
-                bestMove = i;
+                //bestMove = i;
+                //j++;
+            }
+        }
+        for (var i = 0; i < movesArr.length; i++) {
+            if (movesArr[i].score == bestScore) {
+                bestMoveArr[j] = i;
+                j++;
             }
         }
     } else {
         //else loop over the movesArr and choose the moveObj with the lowest score
         var bestScore = 10000;
+        var j = 0;
         for (var i = 0; i < movesArr.length; i++) {
             if (movesArr[i].score < bestScore) {
                 bestScore = movesArr[i].score;
-                bestMove = i;
+                //bestMove = i;
+                //j++;
+            }
+        }
+        for (var i = 0; i < movesArr.length; i++) {
+            if (movesArr[i].score == bestScore) {
+                bestMoveArr[j] = i;
+                j++;
             }
         }
     }
+    var rand = Math.floor(Math.random() * bestMoveArr.length);
+    //console.log(bestMoveArr);
     //return the chosen moveObj (object) from the array to the higher depth
-    return movesArr[bestMove];
+    return movesArr[bestMoveArr[rand]];
 }
-
 //returns the available spots on the atrBoard
 function emptyIndices(atrBoard) {
     return  atrBoard.filter(s => s !== 'nought' && s !== 'cross');
