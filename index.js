@@ -29,7 +29,7 @@ window.addEventListener('load', function () {
         var cellToReset;
         for (var i = 0; i <= 8; i++) {
             cellToReset = document.getElementById(i);
-            cellToReset.style.backgroundColor = noBG;
+            cellToReset.style.backgroundColor = '';
         }
         origBoard = [0, 1, 2, 3, 4, 5, 6, 7, 8];
         for (var i = 0; i < origBoard.length; i++) {
