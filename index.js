@@ -46,24 +46,24 @@ window.addEventListener('load', function () {
             var target = e.target || e.srcElement;
             var pressedCell = document.getElementById(target.id);
             gameStatus.style.backgroundColor = noBG;
-            if (pressedCell != undefined) {
-                if (pressedCell.getAttribute('class') == 'empty') {
+            if (pressedCell !== undefined) {
+                if (pressedCell.getAttribute('class') === 'empty') {
                     drawMove(huPlayer, target.id);
                     bestCell = findBestMoveWithMinimax(origBoard, aiPlayer);
                     drawMove(aiPlayer, bestCell.index);
                     var availCells = emptyIndices(origBoard);
                     var terminalSituation = checkTerminalSituations(origBoard, aiPlayer);
                     for (var i = 0; i <= 8; i++) {
-                        if (terminalSituation == i && i > 0) {
+                        if (terminalSituation === i && i > 0) {
                             highlightCells(i);
-                        } else if (terminalSituation == 0 && availCells.length == 0) {
+                        } else if (terminalSituation === 0 && availCells.length === 0) {
                             highlightCells(0);
                         }
                     }
                 }
             }
         } else {
-            if (gameStatus.style.backgroundColor == redBG) {
+            if (gameStatus.style.backgroundColor === redBG) {
                 gameStatus.style.backgroundColor = noBG;
                 setTimeout(alertStatus, 200);
             } else {
@@ -75,48 +75,48 @@ window.addEventListener('load', function () {
 function highlightCells(atrTerminalSituation) {
     var cellToHighlight;
     for (var i = 0; i <= 8; i++) {
-        if (atrTerminalSituation == 0) {
+        if (atrTerminalSituation === 0) {
             gameStatus.innerHTML = 'Ничья!';
         } else {
             gameStatus.innerHTML = 'Вы проиграли!';
         }
-        if (atrTerminalSituation == 1) {
-            if (i == 0 || i == 1 || i == 2) {
+        if (atrTerminalSituation === 1) {
+            if (i === 0 || i === 1 || i === 2) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        } else if (atrTerminalSituation == 2) {
-            if (i == 3 || i == 4 || i == 5) {
+        } else if (atrTerminalSituation === 2) {
+            if (i === 3 || i === 4 || i === 5) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        } else if (atrTerminalSituation == 3) {
-            if (i == 6 || i == 7 || i == 8) {
+        } else if (atrTerminalSituation === 3) {
+            if (i === 6 || i === 7 || i === 8) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        } else if (atrTerminalSituation == 4) {
-            if (i == 0 || i == 3 || i == 6) {
+        } else if (atrTerminalSituation === 4) {
+            if (i === 0 || i === 3 || i === 6) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        } else if (atrTerminalSituation == 5) {
-            if (i == 1 || i == 4 || i == 7) {
+        } else if (atrTerminalSituation === 5) {
+            if (i === 1 || i === 4 || i === 7) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        } else if (atrTerminalSituation == 6) {
-            if (i == 2 || i == 5 || i == 8) {
+        } else if (atrTerminalSituation === 6) {
+            if (i === 2 || i === 5 || i === 8) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        } else if (atrTerminalSituation == 7) {
-            if (i == 0 || i == 4 || i == 8) {
+        } else if (atrTerminalSituation === 7) {
+            if (i === 0 || i === 4 || i === 8) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        } else if (atrTerminalSituation == 8) {
-            if (i == 2 || i == 4 || i == 6) {
+        } else if (atrTerminalSituation === 8) {
+            if (i === 2 || i === 4 || i === 6) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
@@ -131,11 +131,10 @@ function alertStatus() {
     gameStatus.style.backgroundColor = redBG;
 }
 function drawMove(atrPlayer, atrBestCellIndex) {
-
-    if (atrBestCellIndex != undefined) {
+    if (atrBestCellIndex !== undefined) {
         var cellElem = document.getElementById(atrBestCellIndex);
         var imgElem = document.createElement('img');
-        imgElem.setAttribute('src', (atrPlayer == aiPlayer ? (aiPlayer + '.png') : (huPlayer + '.png')));
+        imgElem.setAttribute('src', (atrPlayer === aiPlayer ? (aiPlayer + '.png') : (huPlayer + '.png')));
         cellElem.appendChild(imgElem);
         cellElem.setAttribute('class', 'full');
         origBoard[atrBestCellIndex] = atrPlayer;
@@ -155,7 +154,7 @@ function findBestMoveWithMinimax(atrBoard, atrPlayer) {
         var moveObj = {};
         moveObj.index = atrBoard[availCells[i]];
         atrBoard[availCells[i]] = atrPlayer;
-        if (atrPlayer == aiPlayer) {
+        if (atrPlayer === aiPlayer) {
             var result = findBestMoveWithMinimax(atrBoard, huPlayer);
             moveObj.score = result.score;
         } else {
@@ -174,12 +173,6 @@ function findBestMoveWithMinimax(atrBoard, atrPlayer) {
                 bestScore = movesArr[i].score;
             }
         }
-        for (var i = 0; i < movesArr.length; i++) {
-            if (movesArr[i].score == bestScore) {
-                bestMovesArr[j] = i;
-                j++;
-            }
-        }
     } else {
         var bestScore = 10000;
         for (var i = 0; i < movesArr.length; i++) {
@@ -187,11 +180,11 @@ function findBestMoveWithMinimax(atrBoard, atrPlayer) {
                 bestScore = movesArr[i].score;
             }
         }
-        for (var i = 0; i < movesArr.length; i++) {
-            if (movesArr[i].score == bestScore) {
-                bestMovesArr[j] = i;
-                j++;
-            }
+    }
+    for (var i = 0; i < movesArr.length; i++) {
+        if (movesArr[i].score === bestScore) {
+            bestMovesArr[j] = i;
+            j++;
         }
     }
     var rand = Math.floor(Math.random() * bestMovesArr.length);
