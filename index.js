@@ -22,7 +22,6 @@ window.addEventListener('load', function () {
         }
         origBoard = [0, 1, 2, 3, 4, 5, 6, 7, 8];
         var radioCrosses = document.getElementById('crosses');
-        var radioNoughts = document.getElementById('noughts');
         if (radioCrosses.checked) {
             huPlayer = 'cross';
             aiPlayer = 'nought';
@@ -125,7 +124,7 @@ function highlightCells(atrTerminalSituation) {
     }
 }
 function emptyIndices(atrBoard) {
-    return  atrBoard.filter(s => s !== aiPlayer && s !== huPlayer);
+    return atrBoard.filter(s => s !== aiPlayer && s !== huPlayer);
 }
 function alertStatus() {
     gameStatus.style.backgroundColor = redBG;
