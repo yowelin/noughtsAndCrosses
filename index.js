@@ -1,27 +1,12 @@
-//human
+'use strict';
 var huPlayer;
-//ai
 var aiPlayer;
-//this is the atrBoard flattened and filled with some values to easier asses the Artificial Intelligence.
-//var origBoard = ['nought', 1, 'cross', 3, 4, 'cross', 6, 'nought', 'nought'];
 var origBoard;
-//ai first move
-var isAiMoveFirst;
-//is game running
 var isGameRunning = false;
-//keeps count of function calls
-//var fc = 0;
-//finding the ultimate play on the game that favors the computer
-var bestSpot;
-//red background var
+var bestCell;
 var redBG = 'orangered';
-//green background var
 var greenBG = 'seagreen';
-//no background var
 var noBG = 'transparent';
-//terminal Situations Array
-var terminalSituationsArr = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-//game status var
 var gameStatus;
 window.addEventListener('load', function () {
     gameStatus = document.getElementById('gameStatus');
@@ -32,13 +17,10 @@ window.addEventListener('load', function () {
         for (var i = 0; i <= 8; i++) {
             cellToReset = document.getElementById(i);
             cellToReset.style.backgroundColor = '';
+            cellToReset.setAttribute('class', 'empty');
+            cellToReset.innerHTML = null;
         }
         origBoard = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-        for (var i = 0; i < origBoard.length; i++) {
-            var cell = document.getElementById(i);
-            cell.setAttribute('class', 'empty');
-            cell.innerHTML = null;
-        }
         var radioCrosses = document.getElementById('crosses');
         var radioNoughts = document.getElementById('noughts');
         if (radioCrosses.checked) {
@@ -50,10 +32,9 @@ window.addEventListener('load', function () {
         }
         var checkboxFirstMove = document.getElementById('firstMove');
         if (checkboxFirstMove.checked) {
-            isAiMoveFirst = false;
         } else {
-            isAiMoveFirst = true;
-            aiMoves();
+            bestCell = findBestMoveWithMinimax(origBoard, aiPlayer);
+            drawMove(aiPlayer, bestCell.index);
         }
         isGameRunning = true;
         gameStatus.innerHTML = 'Игра началась!';
@@ -62,41 +43,22 @@ window.addEventListener('load', function () {
     document.getElementById('gameField').onclick = function (e) {
         if (isGameRunning) {
             e = e || event;
-            gameStatus.style.backgroundColor = noBG;
-            //console.log(origBoard);
             var target = e.target || e.srcElement;
             var pressedCell = document.getElementById(target.id);
+            gameStatus.style.backgroundColor = noBG;
             if (pressedCell != undefined) {
                 if (pressedCell.getAttribute('class') == 'empty') {
-                    var imgHuman = document.createElement('img');
-                    imgHuman.setAttribute('src', (huPlayer == 'cross' ? 'cross.png' : 'nought.png'));
-                    pressedCell.appendChild(imgHuman);
-                    pressedCell.setAttribute('class', 'full');
-                    origBoard[target.id] = huPlayer;
-                    aiMoves();
-                    var availSpots = emptyIndices(origBoard);
+                    drawMove(huPlayer, target.id);
+                    bestCell = findBestMoveWithMinimax(origBoard, aiPlayer);
+                    drawMove(aiPlayer, bestCell.index);
+                    var availCells = emptyIndices(origBoard);
                     var terminalSituation = checkTerminalSituations(origBoard, aiPlayer);
-                    if (checkTerminalSituations(origBoard, huPlayer)) {
-                        gameStatus.innerHTML = 'Вы выиграли!';
-                        isGameRunning = false;
-                    } else if (terminalSituation == terminalSituationsArr[1]) {
-                        highlightCells(terminalSituationsArr[1]);
-                    } else if (terminalSituation == terminalSituationsArr[2]) {
-                        highlightCells(terminalSituationsArr[2]);
-                    } else if (terminalSituation == terminalSituationsArr[3]) {
-                        highlightCells(terminalSituationsArr[3]);
-                    } else if (terminalSituation == terminalSituationsArr[4]) {
-                        highlightCells(terminalSituationsArr[4]);
-                    } else if (terminalSituation == terminalSituationsArr[5]) {
-                        highlightCells(terminalSituationsArr[5]);
-                    } else if (terminalSituation == terminalSituationsArr[6]) {
-                        highlightCells(terminalSituationsArr[6]);
-                    } else if (terminalSituation == terminalSituationsArr[7]) {
-                        highlightCells(terminalSituationsArr[7]);
-                    } else if (terminalSituation == terminalSituationsArr[8]) {
-                        highlightCells(terminalSituationsArr[8]);
-                    } else if (availSpots.length == 0) {
-                        highlightCells(terminalSituationsArr[0]);
+                    for (var i = 0; i <= 8; i++) {
+                        if (terminalSituation == i && i > 0) {
+                            highlightCells(i);
+                        } else if (terminalSituation == 0 && availCells.length == 0) {
+                            highlightCells(0);
+                        }
                     }
                 }
             }
@@ -108,7 +70,7 @@ window.addEventListener('load', function () {
                 alertStatus();
             }
         }
-    }
+    };
 });
 function highlightCells(atrTerminalSituation) {
     var cellToHighlight;
@@ -162,107 +124,79 @@ function highlightCells(atrTerminalSituation) {
         isGameRunning = false;
     }
 }
+function emptyIndices(atrBoard) {
+    return  atrBoard.filter(s => s !== aiPlayer && s !== huPlayer);
+}
 function alertStatus() {
     gameStatus.style.backgroundColor = redBG;
 }
-function aiMoves() {
-    //AI move
-    bestSpot = minimax(origBoard, aiPlayer);
-    //loging the results
-    //console.log('index: ' + bestSpot.index);
-    //console.log('function calls: ' + fc);
-    if (bestSpot.index != undefined) {
-        var aiElem = document.getElementById(bestSpot.index);
-        var imgAI = document.createElement('img');
-        imgAI.setAttribute('src', (aiPlayer == 'cross' ? 'cross.png' : 'nought.png'));
-        aiElem.appendChild(imgAI);
-        aiElem.setAttribute('class', 'full');
-        origBoard[bestSpot.index] = aiPlayer;
+function drawMove(atrPlayer, atrBestCellIndex) {
+
+    if (atrBestCellIndex != undefined) {
+        var cellElem = document.getElementById(atrBestCellIndex);
+        var imgElem = document.createElement('img');
+        imgElem.setAttribute('src', (atrPlayer == aiPlayer ? (aiPlayer + '.png') : (huPlayer + '.png')));
+        cellElem.appendChild(imgElem);
+        cellElem.setAttribute('class', 'full');
+        origBoard[atrBestCellIndex] = atrPlayer;
     }
 }
-// the main minimax function
-function minimax(atrBoard, atrPlayer) {
-    //add one to function calls
-    //fc++;
-    var availSpots = emptyIndices(atrBoard);
-    //checks for the terminal states such as win, lose, and tie and returning a value accordingly
+function findBestMoveWithMinimax(atrBoard, atrPlayer) {
+    var availCells = emptyIndices(atrBoard);
     if (checkTerminalSituations(atrBoard, huPlayer)) {
         return {score: -10};
     } else if (checkTerminalSituations(atrBoard, aiPlayer)) {
         return {score: 10};
-    } else if (availSpots.length === 0) {
+    } else if (availCells.length === 0) {
         return {score: 0};
     }
-    //an array to collect all the objects
     var movesArr = [];
-    //loop through available spots
-    for (var i = 0; i < availSpots.length; i++) {
-        //create an object for each and store the index of that spot that was stored as a number in the object's index key
+    for (var i = 0; i < availCells.length; i++) {
         var moveObj = {};
-        moveObj.index = atrBoard[availSpots[i]];
-
-        //set the empty spot to the current atrPlayer
-        atrBoard[availSpots[i]] = atrPlayer;
-
-        //if collect the score resulted from calling minimax on the opponent of the current atrPlayer
+        moveObj.index = atrBoard[availCells[i]];
+        atrBoard[availCells[i]] = atrPlayer;
         if (atrPlayer == aiPlayer) {
-            var result = minimax(atrBoard, huPlayer);
+            var result = findBestMoveWithMinimax(atrBoard, huPlayer);
             moveObj.score = result.score;
         } else {
-            var result = minimax(atrBoard, aiPlayer);
+            var result = findBestMoveWithMinimax(atrBoard, aiPlayer);
             moveObj.score = result.score;
         }
-        //reset the spot to empty
-        atrBoard[availSpots[i]] = moveObj.index;
-        // push the object to the array
+        atrBoard[availCells[i]] = moveObj.index;
         movesArr.push(moveObj);
     }
-    //if it is the computer's turn loop over the movesArr and choose the moveObj with the highest score
-    var bestMoveArr = [];
+    var bestMovesArr = [];
+    var j = 0;
     if (atrPlayer === aiPlayer) {
         var bestScore = -10000;
-        var j = 0;
         for (var i = 0; i < movesArr.length; i++) {
             if (movesArr[i].score > bestScore) {
                 bestScore = movesArr[i].score;
-                //bestMove = i;
-                //j++;
             }
         }
         for (var i = 0; i < movesArr.length; i++) {
             if (movesArr[i].score == bestScore) {
-                bestMoveArr[j] = i;
+                bestMovesArr[j] = i;
                 j++;
             }
         }
     } else {
-        //else loop over the movesArr and choose the moveObj with the lowest score
         var bestScore = 10000;
-        var j = 0;
         for (var i = 0; i < movesArr.length; i++) {
             if (movesArr[i].score < bestScore) {
                 bestScore = movesArr[i].score;
-                //bestMove = i;
-                //j++;
             }
         }
         for (var i = 0; i < movesArr.length; i++) {
             if (movesArr[i].score == bestScore) {
-                bestMoveArr[j] = i;
+                bestMovesArr[j] = i;
                 j++;
             }
         }
     }
-    var rand = Math.floor(Math.random() * bestMoveArr.length);
-    //console.log(bestMoveArr);
-    //return the chosen moveObj (object) from the array to the higher depth
-    return movesArr[bestMoveArr[rand]];
+    var rand = Math.floor(Math.random() * bestMovesArr.length);
+    return movesArr[bestMovesArr[rand]];
 }
-//returns the available spots on the atrBoard
-function emptyIndices(atrBoard) {
-    return  atrBoard.filter(s => s !== 'nought' && s !== 'cross');
-}
-//check winning combinations using the atrBoard indexies for instace the first win could be 3 xes in a row
 function checkTerminalSituations(atrBoard, atrPlayer) {
     if (atrBoard[0] === atrPlayer && atrBoard[1] === atrPlayer && atrBoard[2] === atrPlayer) {
         return 1;
