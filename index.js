@@ -50,7 +50,7 @@ window.addEventListener('load', function () {
                     drawMove(huPlayer, target.id);
                     bestCell = findBestMoveWithMinimax(origBoard, aiPlayer);
                     drawMove(aiPlayer, bestCell.index);
-                    var availCells = getEmptyCellIndices(origBoard);
+                    var availCells = getEmptyCellsIndices(origBoard);
                     var terminalSituation = checkTerminalSituations(origBoard, aiPlayer);
                     for (var i = 0; i <= 8; i++) {
                         if (terminalSituation === i && i > 0) {
@@ -123,24 +123,24 @@ function highlightTerminalSituationCells(atrTerminalSituation) {
         isGameRunning = false;
     }
 }
-function getEmptyCellIndices(atrBoard) {
+function getEmptyCellsIndices(atrBoard) {
     return atrBoard.filter(s => s !== aiPlayer && s !== huPlayer);
 }
 function highlightGameStatus() {
     gameStatus.style.backgroundColor = redBG;
 }
-function drawMove(atrPlayer, atrBestCellIndex) {
-    if (atrBestCellIndex !== undefined) {
-        var cellElem = document.getElementById(atrBestCellIndex);
+function drawMove(atrPlayer, atrCellIndex) {
+    if (atrCellIndex !== undefined) {
+        var cellElem = document.getElementById(atrCellIndex);
         var imgElem = document.createElement('img');
         imgElem.setAttribute('src', (atrPlayer === aiPlayer ? (aiPlayer + '.png') : (huPlayer + '.png')));
         cellElem.appendChild(imgElem);
         cellElem.setAttribute('class', 'full');
-        origBoard[atrBestCellIndex] = atrPlayer;
+        origBoard[atrCellIndex] = atrPlayer;
     }
 }
 function findBestMoveWithMinimax(atrBoard, atrPlayer) {
-    var availCells = getEmptyCellIndices(atrBoard);
+    var availCells = getEmptyCellsIndices(atrBoard);
     if (checkTerminalSituations(atrBoard, huPlayer)) {
         return {score: -10};
     } else if (checkTerminalSituations(atrBoard, aiPlayer)) {
