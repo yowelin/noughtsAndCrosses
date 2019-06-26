@@ -3,7 +3,7 @@ var huPlayer;
 var aiPlayer;
 var origBoard;
 var isGameRunning = false;
-var bestCell;
+var bestSpot;
 var redBG = 'orangered';
 var greenBG = 'seagreen';
 var noBG = 'transparent';
@@ -17,11 +17,15 @@ window.addEventListener('load', function () {
         for (var i = 0; i <= 8; i++) {
             cellToReset = document.getElementById(i);
             cellToReset.style.backgroundColor = '';
-            cellToReset.setAttribute('class', 'empty');
-            cellToReset.innerHTML = null;
         }
         origBoard = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+        for (var i = 0; i < origBoard.length; i++) {
+            var cell = document.getElementById(i);
+            cell.setAttribute('class', 'empty');
+            cell.innerHTML = null;
+        }
         var radioCrosses = document.getElementById('crosses');
+        var radioNoughts = document.getElementById('noughts');
         if (radioCrosses.checked) {
             huPlayer = 'cross';
             aiPlayer = 'nought';
@@ -32,8 +36,7 @@ window.addEventListener('load', function () {
         var checkboxFirstMove = document.getElementById('firstMove');
         if (checkboxFirstMove.checked) {
         } else {
-            bestCell = findBestMoveWithMinimax(origBoard, aiPlayer);
-            drawMove(aiPlayer, bestCell.index);
+            drawAiMove();
         }
         isGameRunning = true;
         gameStatus.innerHTML = 'Игра началась!';
@@ -45,77 +48,80 @@ window.addEventListener('load', function () {
             var target = e.target || e.srcElement;
             var pressedCell = document.getElementById(target.id);
             gameStatus.style.backgroundColor = noBG;
-            if (pressedCell !== undefined) {
-                if (pressedCell.getAttribute('class') === 'empty') {
-                    drawMove(huPlayer, target.id);
-                    bestCell = findBestMoveWithMinimax(origBoard, aiPlayer);
-                    drawMove(aiPlayer, bestCell.index);
-                    var availCells = getEmptyCellIndices(origBoard);
+            if (pressedCell != undefined) {
+                if (pressedCell.getAttribute('class') == 'empty') {
+                    var imgHuman = document.createElement('img');
+                    imgHuman.setAttribute('src', (huPlayer == 'cross' ? 'cross.png' : 'nought.png'));
+                    pressedCell.appendChild(imgHuman);
+                    pressedCell.setAttribute('class', 'full');
+                    origBoard[target.id] = huPlayer;
+                    drawAiMove();
+                    var availSpots = emptyIndices(origBoard);
                     var terminalSituation = checkTerminalSituations(origBoard, aiPlayer);
                     for (var i = 0; i <= 8; i++) {
-                        if (terminalSituation === i && i > 0) {
-                            highlightTerminalSituationCells(i);
-                        } else if (terminalSituation === 0 && availCells.length === 0) {
-                            highlightTerminalSituationCells(0);
+                        if (terminalSituation == i && i != 0) {
+                            highlightCells(i);
+                        } else if (availSpots.length == 0) {
+                            highlightCells(0);
                         }
                     }
                 }
             }
         } else {
-            if (gameStatus.style.backgroundColor === redBG) {
+            if (gameStatus.style.backgroundColor == redBG) {
                 gameStatus.style.backgroundColor = noBG;
-                setTimeout(highlightGameStatus, 200);
+                setTimeout(alertStatus, 200);
             } else {
-                highlightGameStatus();
+                alertStatus();
             }
         }
-    };
+    }
 });
-function highlightTerminalSituationCells(atrTerminalSituation) {
+function highlightCells(atrTerminalSituation) {
     var cellToHighlight;
     for (var i = 0; i <= 8; i++) {
-        if (atrTerminalSituation === 0) {
+        if (atrTerminalSituation == 0) {
             gameStatus.innerHTML = 'Ничья!';
         } else {
             gameStatus.innerHTML = 'Вы проиграли!';
         }
-        if (atrTerminalSituation === 1) {
-            if (i === 0 || i === 1 || i === 2) {
+        if (atrTerminalSituation == 1) {
+            if (i == 0 || i == 1 || i == 2) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        } else if (atrTerminalSituation === 2) {
-            if (i === 3 || i === 4 || i === 5) {
+        } else if (atrTerminalSituation == 2) {
+            if (i == 3 || i == 4 || i == 5) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        } else if (atrTerminalSituation === 3) {
-            if (i === 6 || i === 7 || i === 8) {
+        } else if (atrTerminalSituation == 3) {
+            if (i == 6 || i == 7 || i == 8) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        } else if (atrTerminalSituation === 4) {
-            if (i === 0 || i === 3 || i === 6) {
+        } else if (atrTerminalSituation == 4) {
+            if (i == 0 || i == 3 || i == 6) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        } else if (atrTerminalSituation === 5) {
-            if (i === 1 || i === 4 || i === 7) {
+        } else if (atrTerminalSituation == 5) {
+            if (i == 1 || i == 4 || i == 7) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        } else if (atrTerminalSituation === 6) {
-            if (i === 2 || i === 5 || i === 8) {
+        } else if (atrTerminalSituation == 6) {
+            if (i == 2 || i == 5 || i == 8) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        } else if (atrTerminalSituation === 7) {
-            if (i === 0 || i === 4 || i === 8) {
+        } else if (atrTerminalSituation == 7) {
+            if (i == 0 || i == 4 || i == 8) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
-        } else if (atrTerminalSituation === 8) {
-            if (i === 2 || i === 4 || i === 6) {
+        } else if (atrTerminalSituation == 8) {
+            if (i == 2 || i == 4 || i == 6) {
                 cellToHighlight = document.getElementById(i);
                 cellToHighlight.style.backgroundColor = redBG;
             }
@@ -123,44 +129,45 @@ function highlightTerminalSituationCells(atrTerminalSituation) {
         isGameRunning = false;
     }
 }
-function getEmptyCellIndices(atrBoard) {
-    return atrBoard.filter(s => s !== aiPlayer && s !== huPlayer);
+function emptyIndices(atrBoard) {
+    return  atrBoard.filter(s => s !== 'nought' && s !== 'cross');
 }
-function highlightGameStatus() {
+function alertStatus() {
     gameStatus.style.backgroundColor = redBG;
 }
-function drawMove(atrPlayer, atrBestCellIndex) {
-    if (atrBestCellIndex !== undefined) {
-        var cellElem = document.getElementById(atrBestCellIndex);
-        var imgElem = document.createElement('img');
-        imgElem.setAttribute('src', (atrPlayer === aiPlayer ? (aiPlayer + '.png') : (huPlayer + '.png')));
-        cellElem.appendChild(imgElem);
-        cellElem.setAttribute('class', 'full');
-        origBoard[atrBestCellIndex] = atrPlayer;
+function drawAiMove() {
+    bestSpot = findBestMoveWithMinimax(origBoard, aiPlayer);
+    if (bestSpot.index != undefined) {
+        var aiElem = document.getElementById(bestSpot.index);
+        var imgAi = document.createElement('img');
+        imgAi.setAttribute('src', (aiPlayer == 'cross' ? 'cross.png' : 'nought.png'));
+        aiElem.appendChild(imgAi);
+        aiElem.setAttribute('class', 'full');
+        origBoard[bestSpot.index] = aiPlayer;
     }
 }
 function findBestMoveWithMinimax(atrBoard, atrPlayer) {
-    var availCells = getEmptyCellIndices(atrBoard);
+    var availSpots = emptyIndices(atrBoard);
     if (checkTerminalSituations(atrBoard, huPlayer)) {
         return {score: -10};
     } else if (checkTerminalSituations(atrBoard, aiPlayer)) {
         return {score: 10};
-    } else if (availCells.length === 0) {
+    } else if (availSpots.length === 0) {
         return {score: 0};
     }
     var movesArr = [];
-    for (var i = 0; i < availCells.length; i++) {
+    for (var i = 0; i < availSpots.length; i++) {
         var moveObj = {};
-        moveObj.index = atrBoard[availCells[i]];
-        atrBoard[availCells[i]] = atrPlayer;
-        if (atrPlayer === aiPlayer) {
+        moveObj.index = atrBoard[availSpots[i]];
+        atrBoard[availSpots[i]] = atrPlayer;
+        if (atrPlayer == aiPlayer) {
             var result = findBestMoveWithMinimax(atrBoard, huPlayer);
             moveObj.score = result.score;
         } else {
             var result = findBestMoveWithMinimax(atrBoard, aiPlayer);
             moveObj.score = result.score;
         }
-        atrBoard[availCells[i]] = moveObj.index;
+        atrBoard[availSpots[i]] = moveObj.index;
         movesArr.push(moveObj);
     }
     var bestMovesArr = [];
@@ -172,6 +179,12 @@ function findBestMoveWithMinimax(atrBoard, atrPlayer) {
                 bestScore = movesArr[i].score;
             }
         }
+        for (var i = 0; i < movesArr.length; i++) {
+            if (movesArr[i].score == bestScore) {
+                bestMovesArr[j] = i;
+                j++;
+            }
+        }
     } else {
         var bestScore = 10000;
         for (var i = 0; i < movesArr.length; i++) {
@@ -179,11 +192,11 @@ function findBestMoveWithMinimax(atrBoard, atrPlayer) {
                 bestScore = movesArr[i].score;
             }
         }
-    }
-    for (var i = 0; i < movesArr.length; i++) {
-        if (movesArr[i].score === bestScore) {
-            bestMovesArr[j] = i;
-            j++;
+        for (var i = 0; i < movesArr.length; i++) {
+            if (movesArr[i].score == bestScore) {
+                bestMovesArr[j] = i;
+                j++;
+            }
         }
     }
     var rand = Math.floor(Math.random() * bestMovesArr.length);
