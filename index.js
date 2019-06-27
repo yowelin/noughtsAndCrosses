@@ -8,8 +8,25 @@ var redBG = 'orangered';
 var greenBG = 'seagreen';
 var noBG = 'transparent';
 var gameStatus;
+var isHuPlayerFirst;
 window.addEventListener('load', function () {
+    var checkboxFirstMove = document.getElementById('firstMove');
     gameStatus = document.getElementById('gameStatus');
+    document.getElementById('menu').onclick = function (e) {
+        e = e || event;
+        var target = e.target || e.srcElement;
+        if (isGameRunning) {
+            if ((target.id === 'crossesLabel' && huPlayer === 'nought') || (target.id === 'noughtsLabel' && huPlayer === 'cross') || (target.id === 'firstMove')) {
+                var isNewGameWished = confirm("Хотите отменить текущую партию?");
+                if (isNewGameWished) {
+                    isGameRunning = false;
+                    gameStatus.innerHTML = 'Нажмите "Начать игру".';
+                } else {
+                    e.preventDefault();
+                }
+            }
+        }
+    };
     document.getElementById('startButton').onclick = function (e) {
         e = e || event;
         var target = e.target || e.srcElement;
@@ -35,12 +52,14 @@ window.addEventListener('load', function () {
             noughtsLabel.style.backgroundColor = greenBG;
             crossesLabel.style.backgroundColor = noBG;
         }
-        var checkboxFirstMove = document.getElementById('firstMove');
+
         var firstMoveLabel = document.getElementById('firstMoveLabel');
         if (checkboxFirstMove.checked) {
             firstMoveLabel.style.backgroundColor = greenBG;
+            isHuPlayerFirst = true;
         } else {
             firstMoveLabel.style.backgroundColor = noBG;
+            isHuPlayerFirst = false;
             bestCell = findBestMoveWithMinimax(origBoard, aiPlayer);
             drawMove(aiPlayer, bestCell.index);
         }
@@ -73,7 +92,7 @@ window.addEventListener('load', function () {
         } else {
             if (gameStatus.style.backgroundColor === redBG) {
                 gameStatus.style.backgroundColor = noBG;
-                setTimeout(highlightGameStatus, 200);
+                setTimeout(highlightGameStatus(), 200);
             } else {
                 highlightGameStatus();
             }

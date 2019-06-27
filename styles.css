@@ -36,6 +36,10 @@ body {
     font-size: 14px;
     color: #fc0;
 }
+.sides + label:hover {
+    outline: 1px solid greenyellow;
+    z-index: 1;
+}
 .sides + label:before {
     content: '';
     position: absolute;
@@ -78,6 +82,10 @@ body {
     cursor: pointer;
     font-size: 14px;
     color: #fc0;
+}
+#firstMove + label:hover {
+    outline: 1px solid greenyellow;
+    z-index: 1;
 }
 #firstMove + label:before {
     content: '';
