@@ -22,16 +22,25 @@ window.addEventListener('load', function () {
         }
         origBoard = [0, 1, 2, 3, 4, 5, 6, 7, 8];
         var radioCrosses = document.getElementById('crosses');
+        var crossesLabel = document.getElementById('crossesLabel');
+        var noughtsLabel = document.getElementById('noughtsLabel');
         if (radioCrosses.checked) {
             huPlayer = 'cross';
             aiPlayer = 'nought';
+            crossesLabel.style.backgroundColor = greenBG;
+            noughtsLabel.style.backgroundColor = noBG;
         } else {
             huPlayer = 'nought';
             aiPlayer = 'cross';
+            noughtsLabel.style.backgroundColor = greenBG;
+            crossesLabel.style.backgroundColor = noBG;
         }
         var checkboxFirstMove = document.getElementById('firstMove');
+        var firstMoveLabel = document.getElementById('firstMoveLabel');
         if (checkboxFirstMove.checked) {
+            firstMoveLabel.style.backgroundColor = greenBG;
         } else {
+            firstMoveLabel.style.backgroundColor = noBG;
             bestCell = findBestMoveWithMinimax(origBoard, aiPlayer);
             drawMove(aiPlayer, bestCell.index);
         }
