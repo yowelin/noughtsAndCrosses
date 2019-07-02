@@ -6,73 +6,72 @@ var isGameRunning = false;
 var bestCell;
 var redBG = 'orangered';
 var greenBG = 'seagreen';
-var noBG = 'transparent';
+var noBG = '';
 var gameStatus;
 var isHuPlayerFirst;
 window.addEventListener('load', function () {
-    var checkboxFirstMove = document.getElementById('firstMove');
     gameStatus = document.getElementById('gameStatus');
     document.getElementById('menu').onclick = function (e) {
-        e = e || event;
-        var target = e.target || e.srcElement;
         if (isGameRunning) {
+            e = e || event;
+            var target = e.target || e.srcElement;
             if ((target.id === 'crossesLabel' && huPlayer === 'nought') || (target.id === 'noughtsLabel' && huPlayer === 'cross') || (target.id === 'firstMove')) {
-                var isNewGameWished = confirm("Хотите отменить текущую партию?");
-                if (isNewGameWished) {
-                    isGameRunning = false;
-                    gameStatus.innerHTML = 'Нажмите "Начать игру".';
-                } else {
-                    e.preventDefault();
-                }
+                askWhetherInterruptGame(e);
             }
         }
     };
     document.getElementById('startButton').onclick = function (e) {
-        e = e || event;
-        var target = e.target || e.srcElement;
-        var cellToReset;
-        for (var i = 0; i <= 8; i++) {
-            cellToReset = document.getElementById(i);
-            cellToReset.style.backgroundColor = '';
-            cellToReset.setAttribute('class', 'empty');
-            cellToReset.innerHTML = null;
-        }
-        origBoard = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-        var radioCrosses = document.getElementById('crosses');
-        var crossesLabel = document.getElementById('crossesLabel');
-        var noughtsLabel = document.getElementById('noughtsLabel');
-        if (radioCrosses.checked) {
-            huPlayer = 'cross';
-            aiPlayer = 'nought';
-            crossesLabel.style.backgroundColor = greenBG;
-            noughtsLabel.style.backgroundColor = noBG;
+        if (isGameRunning) {
+            e = e || event;
+            var target = e.target || e.srcElement;
+            var cellToReset;
+            if (target.id === 'startButton') {
+                askWhetherInterruptGame(e);
+            }
         } else {
-            huPlayer = 'nought';
-            aiPlayer = 'cross';
-            noughtsLabel.style.backgroundColor = greenBG;
-            crossesLabel.style.backgroundColor = noBG;
+            for (var i = 0; i <= 8; i++) {
+                cellToReset = document.getElementById(i);
+                cellToReset.style.backgroundColor = noBG;
+                cellToReset.setAttribute('class', 'empty');
+                cellToReset.innerHTML = null;
+            }
+            origBoard = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+            var radioCrosses = document.getElementById('crosses');
+            var crossesLabel = document.getElementById('crossesLabel');
+            var noughtsLabel = document.getElementById('noughtsLabel');
+            if (radioCrosses.checked) {
+                huPlayer = 'cross';
+                aiPlayer = 'nought';
+                crossesLabel.style.backgroundColor = greenBG;
+                noughtsLabel.style.backgroundColor = noBG;
+            } else {
+                huPlayer = 'nought';
+                aiPlayer = 'cross';
+                noughtsLabel.style.backgroundColor = greenBG;
+                crossesLabel.style.backgroundColor = noBG;
+            }
+            var checkboxFirstMove = document.getElementById('firstMove');
+            var firstMoveLabel = document.getElementById('firstMoveLabel');
+            if (checkboxFirstMove.checked) {
+                firstMoveLabel.style.backgroundColor = greenBG;
+                isHuPlayerFirst = true;
+            } else {
+                firstMoveLabel.style.backgroundColor = noBG;
+                isHuPlayerFirst = false;
+                bestCell = findBestMoveWithMinimax(origBoard, aiPlayer);
+                drawMove(aiPlayer, bestCell.index);
+            }
+            isGameRunning = true;
+            gameStatus.innerHTML = 'Игра началась!';
+            gameStatus.style.backgroundColor = noBG;
         }
-
-        var firstMoveLabel = document.getElementById('firstMoveLabel');
-        if (checkboxFirstMove.checked) {
-            firstMoveLabel.style.backgroundColor = greenBG;
-            isHuPlayerFirst = true;
-        } else {
-            firstMoveLabel.style.backgroundColor = noBG;
-            isHuPlayerFirst = false;
-            bestCell = findBestMoveWithMinimax(origBoard, aiPlayer);
-            drawMove(aiPlayer, bestCell.index);
-        }
-        isGameRunning = true;
-        gameStatus.innerHTML = 'Игра началась!';
-        gameStatus.style.backgroundColor = noBG;
     };
     document.getElementById('gameField').onclick = function (e) {
         if (isGameRunning) {
             e = e || event;
             var target = e.target || e.srcElement;
             var pressedCell = document.getElementById(target.id);
-            gameStatus.style.backgroundColor = noBG;
+            //gameStatus.style.backgroundColor = noBG;
             if (pressedCell !== undefined) {
                 if (pressedCell.getAttribute('class') === 'empty') {
                     drawMove(huPlayer, target.id);
@@ -80,25 +79,33 @@ window.addEventListener('load', function () {
                     drawMove(aiPlayer, bestCell.index);
                     var availCells = getEmptyCellsIndices(origBoard);
                     var terminalSituation = checkTerminalSituations(origBoard, aiPlayer);
-                    for (var i = 0; i <= 8; i++) {
-                        if (terminalSituation === i && i > 0) {
-                            highlightTerminalSituationCells(i);
-                        } else if (terminalSituation === 0 && availCells.length === 0) {
-                            highlightTerminalSituationCells(0);
-                        }
+                    if (terminalSituation >= 1 && terminalSituation <= 8) {
+                        highlightTerminalSituationCells(terminalSituation);
+                    } else if (terminalSituation === 0 && availCells.length === 0) {
+                        highlightTerminalSituationCells(0);
+                        highlightElemBg(gameStatus);
                     }
                 }
             }
         } else {
             if (gameStatus.style.backgroundColor === redBG) {
                 gameStatus.style.backgroundColor = noBG;
-                setTimeout(highlightGameStatus(), 200);
+                setTimeout(highlightElemBg, 200, gameStatus);
             } else {
-                highlightGameStatus();
+                highlightElemBg(gameStatus);
             }
         }
     };
 });
+function askWhetherInterruptGame(e) {
+    var isNewGameWished = confirm("Хотите отменить текущую партию?");
+    if (isNewGameWished) {
+        isGameRunning = false;
+        gameStatus.innerHTML = 'Нажмите "Начать игру".';
+    } else {
+        e.preventDefault();
+    }
+}
 function highlightTerminalSituationCells(atrTerminalSituation) {
     var cellToHighlight;
     for (var i = 0; i <= 8; i++) {
@@ -110,42 +117,42 @@ function highlightTerminalSituationCells(atrTerminalSituation) {
         if (atrTerminalSituation === 1) {
             if (i === 0 || i === 1 || i === 2) {
                 cellToHighlight = document.getElementById(i);
-                cellToHighlight.style.backgroundColor = redBG;
+                highlightElemBg(cellToHighlight);
             }
         } else if (atrTerminalSituation === 2) {
             if (i === 3 || i === 4 || i === 5) {
                 cellToHighlight = document.getElementById(i);
-                cellToHighlight.style.backgroundColor = redBG;
+                highlightElemBg(cellToHighlight);
             }
         } else if (atrTerminalSituation === 3) {
             if (i === 6 || i === 7 || i === 8) {
                 cellToHighlight = document.getElementById(i);
-                cellToHighlight.style.backgroundColor = redBG;
+                highlightElemBg(cellToHighlight);
             }
         } else if (atrTerminalSituation === 4) {
             if (i === 0 || i === 3 || i === 6) {
                 cellToHighlight = document.getElementById(i);
-                cellToHighlight.style.backgroundColor = redBG;
+                highlightElemBg(cellToHighlight);
             }
         } else if (atrTerminalSituation === 5) {
             if (i === 1 || i === 4 || i === 7) {
                 cellToHighlight = document.getElementById(i);
-                cellToHighlight.style.backgroundColor = redBG;
+                highlightElemBg(cellToHighlight);
             }
         } else if (atrTerminalSituation === 6) {
             if (i === 2 || i === 5 || i === 8) {
                 cellToHighlight = document.getElementById(i);
-                cellToHighlight.style.backgroundColor = redBG;
+                highlightElemBg(cellToHighlight);
             }
         } else if (atrTerminalSituation === 7) {
             if (i === 0 || i === 4 || i === 8) {
                 cellToHighlight = document.getElementById(i);
-                cellToHighlight.style.backgroundColor = redBG;
+                highlightElemBg(cellToHighlight);
             }
         } else if (atrTerminalSituation === 8) {
             if (i === 2 || i === 4 || i === 6) {
                 cellToHighlight = document.getElementById(i);
-                cellToHighlight.style.backgroundColor = redBG;
+                highlightElemBg(cellToHighlight);
             }
         }
         isGameRunning = false;
@@ -154,8 +161,8 @@ function highlightTerminalSituationCells(atrTerminalSituation) {
 function getEmptyCellsIndices(atrBoard) {
     return atrBoard.filter(s => s !== aiPlayer && s !== huPlayer);
 }
-function highlightGameStatus() {
-    gameStatus.style.backgroundColor = redBG;
+function highlightElemBg(elem) {
+    elem.style.backgroundColor = redBG;
 }
 function drawMove(atrPlayer, atrCellIndex) {
     if (atrCellIndex !== undefined) {
@@ -180,7 +187,7 @@ function findBestMoveWithMinimax(atrBoard, atrPlayer) {
     for (var i = 0; i < availCells.length; i++) {
         var moveObj = {};
         moveObj.index = atrBoard[availCells[i]];
-        atrBoard[availCells[i]] = atrPlayer;
+        atrBoard[moveObj.index] = atrPlayer;
         if (atrPlayer === aiPlayer) {
             var result = findBestMoveWithMinimax(atrBoard, huPlayer);
             moveObj.score = result.score;
@@ -188,7 +195,7 @@ function findBestMoveWithMinimax(atrBoard, atrPlayer) {
             var result = findBestMoveWithMinimax(atrBoard, aiPlayer);
             moveObj.score = result.score;
         }
-        atrBoard[availCells[i]] = moveObj.index;
+        atrBoard[moveObj.index] = moveObj.index;
         movesArr.push(moveObj);
     }
     var bestMovesArr = [];
