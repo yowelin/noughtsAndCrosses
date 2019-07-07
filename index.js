@@ -1,7 +1,7 @@
 'use strict';
 var huPlayer;
 var aiPlayer;
-var origBoard;
+var origBoard = ["O", 1, "X", "X", 4, "X", 6, "O", "O"];
 var isGameRunning = false;
 var bestCell;
 var redBG = 'orangered';
@@ -160,6 +160,7 @@ function highlightTerminalSituationCells(atrTerminalSituation) {
         }
     }
 }
+//Получения списка пустых ячеек
 function getEmptyCellsIndices(atrBoard) {
     return atrBoard.filter(s => s !== aiPlayer && s !== huPlayer);
 }
@@ -176,8 +177,10 @@ function drawMove(atrPlayer, atrCellIndex) {
         origBoard[atrCellIndex] = atrPlayer;
     }
 }
+//Функция поиска наилучшего хода
 function findBestMoveWithMinimax(atrBoard, atrPlayer) {
     var availCells = getEmptyCellsIndices(atrBoard);
+    //Проверка на терминальное состояние (победа / поражение / ничья) и возвращение значения результата
     if (checkTerminalSituations(atrBoard, huPlayer)) {
         return {score: -10};
     } else if (checkTerminalSituations(atrBoard, aiPlayer)) {
@@ -185,11 +188,15 @@ function findBestMoveWithMinimax(atrBoard, atrPlayer) {
     } else if (availCells.length === 0) {
         return {score: 0};
     }
+    //массив для хранения всех объектов
     var movesArr = [];
     for (var i = 0; i < availCells.length; i++) {
+        //создание объекта для каждой доступной клетки и сохранение её индекса
         var moveObj = {};
         moveObj.index = atrBoard[availCells[i]];
+        //совершение хода за игрока переданного в функцию
         atrBoard[moveObj.index] = atrPlayer;
+        //получение очков, заработанных после вызова минимакса от противника текущего игрока
         if (atrPlayer === aiPlayer) {
             var result = findBestMoveWithMinimax(atrBoard, huPlayer);
             moveObj.score = result.score;
@@ -197,11 +204,14 @@ function findBestMoveWithMinimax(atrBoard, atrPlayer) {
             var result = findBestMoveWithMinimax(atrBoard, aiPlayer);
             moveObj.score = result.score;
         }
+        //очистка клетки
         atrBoard[moveObj.index] = moveObj.index;
+        //добавление объекта в массив
         movesArr.push(moveObj);
     }
-    var bestMovesArr = [];
+    var bestMovesIndicesArr = [];
     var j = 0;
+    //если это ход ИИ, пройти циклом по ходам и выбрать ход с наибольшим количеством очков
     if (atrPlayer === aiPlayer) {
         var bestScore = -10000;
         for (var i = 0; i < movesArr.length; i++) {
@@ -219,13 +229,14 @@ function findBestMoveWithMinimax(atrBoard, atrPlayer) {
     }
     for (var i = 0; i < movesArr.length; i++) {
         if (movesArr[i].score === bestScore) {
-            bestMovesArr[j] = i;
+            bestMovesIndicesArr[j] = i;
             j++;
         }
     }
-    var rand = Math.floor(Math.random() * bestMovesArr.length);
-    return movesArr[bestMovesArr[rand]];
+    var rand = Math.floor(Math.random() * bestMovesIndicesArr.length);
+    return movesArr[bestMovesIndicesArr[rand]];
 }
+//Проверка на окончательную комбинацию
 function checkTerminalSituations(atrBoard, atrPlayer) {
     if (atrBoard[0] === atrPlayer && atrBoard[1] === atrPlayer && atrBoard[2] === atrPlayer) {
         return 1;
