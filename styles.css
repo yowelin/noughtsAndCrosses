@@ -117,10 +117,6 @@ body {
 #firstMove:checked + label:after {
     left: 18px;
 }
-#firstMove:focus + label:before {
-    /*box-shadow: inset 0 2px 3px rgba(0,0,0,.2), 0 0 0 3px rgba(255,255,0,.7);*/
-}
-/**/
 #startButton {
     margin: 5px;
     width: 200px;
@@ -144,8 +140,6 @@ table.gameField {
     border: 1px solid #ADFF2F;
     padding: 0px 0px 0px 0px;
     background-color: #333333;
-    /*width: 304px;
-    height: 304px;*/
     text-align: center;
     border-collapse: collapse;
 }
@@ -166,8 +160,6 @@ table.gameField td {
 }
 .empty, .full {
     transition: background-color 0.5s 0.1s ease;
-    /*-o-transition: background-color 0.5s 0.1s ease;
-    -webkit-transition: background-color 0.5s 0.1s ease;*/
 }
 #gameStatus {
     position: relative;
@@ -181,6 +173,4 @@ table.gameField td {
 }
 #gameStatus {
     transition: background-color 0.15s 0.1s ease;
-    /*-o-transition: background-color 0.15s 0.1s ease;
-    -webkit-transition: background-color 0.15s 0.1s ease;*/
 }

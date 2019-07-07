@@ -9,8 +9,10 @@ var greenBG = 'seagreen';
 var noBG = '';
 var gameStatus;
 var isHuPlayerFirst;
+var startButton;
 window.addEventListener('load', function () {
     gameStatus = document.getElementById('gameStatus');
+    startButton = document.getElementById('startButton');
     document.getElementById('menu').onclick = function (e) {
         if (isGameRunning) {
             e = e || event;
@@ -29,6 +31,7 @@ window.addEventListener('load', function () {
                 askWhetherInterruptGame(e);
             }
         } else {
+            startButton.setAttribute('value', 'Окончить игру');
             for (var i = 0; i <= 8; i++) {
                 cellToReset = document.getElementById(i);
                 cellToReset.style.backgroundColor = noBG;
@@ -71,7 +74,6 @@ window.addEventListener('load', function () {
             e = e || event;
             var target = e.target || e.srcElement;
             var pressedCell = document.getElementById(target.id);
-            //gameStatus.style.backgroundColor = noBG;
             if (pressedCell !== undefined) {
                 if (pressedCell.getAttribute('class') === 'empty') {
                     drawMove(huPlayer, target.id);
@@ -79,11 +81,11 @@ window.addEventListener('load', function () {
                     drawMove(aiPlayer, bestCell.index);
                     var availCells = getEmptyCellsIndices(origBoard);
                     var terminalSituation = checkTerminalSituations(origBoard, aiPlayer);
-                    if (terminalSituation >= 1 && terminalSituation <= 8) {
+                    if ((terminalSituation === 0 && availCells.length === 0) || terminalSituation > 0) {
                         highlightTerminalSituationCells(terminalSituation);
-                    } else if (terminalSituation === 0 && availCells.length === 0) {
-                        highlightTerminalSituationCells(0);
+                        isGameRunning = false;
                         highlightElemBg(gameStatus);
+                        startButton.setAttribute('value', 'Начать игру');
                     }
                 }
             }
@@ -102,6 +104,7 @@ function askWhetherInterruptGame(e) {
     if (isNewGameWished) {
         isGameRunning = false;
         gameStatus.innerHTML = 'Нажмите "Начать игру".';
+        startButton.setAttribute('value', 'Начать игру');
     } else {
         e.preventDefault();
     }
@@ -155,7 +158,6 @@ function highlightTerminalSituationCells(atrTerminalSituation) {
                 highlightElemBg(cellToHighlight);
             }
         }
-        isGameRunning = false;
     }
 }
 function getEmptyCellsIndices(atrBoard) {
